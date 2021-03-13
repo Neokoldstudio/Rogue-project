@@ -23,9 +23,10 @@ image = pygame.transform.scale(img, (1920,1080))
 joysticks=[]
 
 for i in range(pygame.joystick.get_count()):
-  joysticks.append(pygame.joystick.joystick(i))
+  joysticks.append(pygame.joystick.Joystick(i))
   joysticks[-1].init()
-  
+
+print(joysticks)
 while running:
   screen.fill((0,0,0))
 
