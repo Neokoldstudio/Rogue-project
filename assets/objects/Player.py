@@ -1,11 +1,18 @@
+import math
 import pygame
 import os
 
 
 pygame.init()
+pygame.joystick.init()
 
 class Player():
     def __init__(self,screen, sprite, x, y):
+
+        self.joysticks=[pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+
+        for i in self.joysticks:
+            i.init()
 
         pygame.sprite.Sprite.__init__(self)
 
@@ -22,18 +29,32 @@ class Player():
 
         key = pygame.key.get_pressed()
 
-        
-        speed = 9
+        speed = 5
 
-        KeyLeft = key[pygame.K_q]
-        KeyRight = key[pygame.K_d]
-        KeyUp = key[pygame.K_z]
-        KeyDown = key[pygame.K_s]
+        if (self.joysticks != []):
+            VerDir = self.joysticks[0].get_axis(1)
+            HorDir = self.joysticks[0].get_axis(0)
 
-        HorDir = KeyRight - KeyLeft
-        VerDir = KeyDown - KeyUp
+            if (math.sqrt(VerDir**2) > 0.2 or math.sqrt(HorDir**2) > 0.2):
 
-        self.rect.x += speed * HorDir
-        self.rect.y += speed * VerDir
+                self.rect.x += speed * HorDir
+                self.rect.y += speed * VerDir
+
+
+        else:
+            KeyLeft = key[pygame.K_q]
+            KeyRight = key[pygame.K_d]
+            KeyUp = key[pygame.K_z]
+            KeyDown = key[pygame.K_s]
+
+            HorDir = KeyRight - KeyLeft
+            VerDir = KeyDown - KeyUp
+
+            if(HorDir*VerDir != 0):
+                HorDir = 0.65 * HorDir
+                VerDir = 0.65 * VerDir
+
+            self.rect.x += speed * HorDir
+            self.rect.y += speed * VerDir
 
         self.screen.blit(self.image,self.rect)

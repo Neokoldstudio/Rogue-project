@@ -10,6 +10,7 @@ pygame.init()
 #screen_width, screen_height = 1000,1000
 
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+#screen = pygame.display.set_mode((300, 300))
 
 pygame.display.set_caption("Rogue Like")
 
@@ -20,13 +21,6 @@ player = Player(screen, "Isaac.png", 80,100)
 img = pygame.image.load(os.path.join("assets/sprites/props", "Isaac's_Room_1.png")).convert_alpha()
 image = pygame.transform.scale(img, (1920,1080))
 
-joysticks=[]
-
-for i in range(pygame.joystick.get_count()):
-  joysticks.append(pygame.joystick.Joystick(i))
-  joysticks[-1].init()
-
-print(joysticks)
 while running:
   screen.fill((0,0,0))
 
@@ -41,4 +35,5 @@ while running:
   
   pygame.display.update()
 
+pygame.joystick.quit()
 pygame.quit()
