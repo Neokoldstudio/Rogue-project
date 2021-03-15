@@ -29,19 +29,19 @@ class Player():
 
         key = pygame.key.get_pressed()
 
-        speed = 5
+        
 
         if (self.joysticks != []):
+
+            speed = 7
+
             VerDir = self.joysticks[0].get_axis(1)
             HorDir = self.joysticks[0].get_axis(0)
 
-            if (math.sqrt(VerDir**2) > 0.2 or math.sqrt(HorDir**2) > 0.2):
-
-                self.rect.x += speed * HorDir
-                self.rect.y += speed * VerDir
-
-
         else:
+            
+            speed = 5
+
             KeyLeft = key[pygame.K_q]
             KeyRight = key[pygame.K_d]
             KeyUp = key[pygame.K_z]
@@ -54,7 +54,9 @@ class Player():
                 HorDir = 0.65 * HorDir
                 VerDir = 0.65 * VerDir
 
-            self.rect.x += speed * HorDir
-            self.rect.y += speed * VerDir
+        if (math.sqrt(VerDir**2) > 0.2 or math.sqrt(HorDir**2) > 0.2):
+
+                self.rect.x += speed * HorDir
+                self.rect.y += speed * VerDir
 
         self.screen.blit(self.image,self.rect)
