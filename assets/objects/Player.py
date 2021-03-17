@@ -24,23 +24,24 @@ class Player():
         self.rect.x = x
         self.rect.y = y
 
-
     def update(self):
+
+        def Lerp(A,B,C):
+            value = (C*A) + ((1-C)*B)
+            return value
 
         key = pygame.key.get_pressed()
 
-        
-
         if (self.joysticks != []):
 
-            speed = 7
+            speed = 5
 
             VerDir = self.joysticks[0].get_axis(1)
             HorDir = self.joysticks[0].get_axis(0)
 
         else:
             
-            speed = 5
+            speed = 4
 
             KeyLeft = key[pygame.K_q]
             KeyRight = key[pygame.K_d]
@@ -51,12 +52,13 @@ class Player():
             VerDir = KeyDown - KeyUp
 
             if(HorDir*VerDir != 0):
-                HorDir = 0.65 * HorDir
-                VerDir = 0.65 * VerDir
+                HorDir = 0.6 * HorDir
+                VerDir = 0.6 * VerDir
 
         if (math.sqrt(VerDir**2) > 0.2 or math.sqrt(HorDir**2) > 0.2):
 
                 self.rect.x += speed * HorDir
                 self.rect.y += speed * VerDir
 
+                
         self.screen.blit(self.image,self.rect)
