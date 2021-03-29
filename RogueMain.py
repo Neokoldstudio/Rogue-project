@@ -40,10 +40,10 @@ while running:
   screen.fill((0,0,0))
 
   screen.blit(image,(0,0))
-
-  player.update()
   wall.Draw()
   wall1.Draw()
+  player.update()
+  
   screen.blit(update_fps(), (10,0))
   
   for event in pygame.event.get():

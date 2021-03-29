@@ -15,8 +15,8 @@ class Wall():
         self.rect.x = x
         self.rect.y = y
         
-        self.collisionCenter = (self.rect.x, self.rect.y)
-        self.collisionSize = 55
+        self.collisionCenter = (self.rect.x + 75, self.rect.y+ 75)
+        self.collisionSize = 150
         self.collisionType = "Box"
 
     def Draw(self):
