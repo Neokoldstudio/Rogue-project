@@ -4,15 +4,13 @@ import os
 
 pygame.init()
 
-class Wall():
+class InvisibleWall():
 
-    def __init__(self, screen, sprite, x, y, size):
+    def __init__(self, screen, x, y, size):
 
         self.screen = screen
-        self.img = pygame.image.load(os.path.join("assets/sprites/props", sprite)).convert_alpha()
         self.collisionSize = size
-        self.image = pygame.transform.scale(self.img, (self.collisionSize[0],self.collisionSize[1]))
-        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(x,y,x+self.collisionSize[0], y+self.collisionSize[1])
         self.rect.x = x
         self.rect.y = y
         
@@ -21,7 +19,6 @@ class Wall():
         self.collisionType = "Box"
 
     def Draw(self):
-
-        self.screen.blit(self.image,self.rect)
-        
+        #pygame.draw.rect(self.screen, (0,0,255, 10), (self.rect.x,self.rect.y, self.rect.x + self.collisionSize[0],self.rect.y + self.collisionSize[1]))
+        pass
         

@@ -42,13 +42,20 @@ class Player():
         def lenght(v):
             return (math.sqrt(v[0]*v[0] + v[1]*v[1]))
 
+        # def DistBox(p,center, size):
+        #     dx = max(abs(p[0] - center[0]) - size / 2, 0)
+        #     dy = max(abs(p[1] - center[1]) - size / 2, 0)
+
+        #     distPoint = (dx,dy)
+        #     return lenght(distPoint)
+
         def DistCircleToCircle(p1, p2, radius1, radius2):
             distTpl = (p2[0]-p1[0], p2[1]-p1[1])
             return(lenght(distTpl)-(radius1+radius2))
         
         def DistBoxToCircle(p, center, size, radius):
-            dx = max(abs(p[0] - center[0]) - size / 2, 0)
-            dy = max(abs(p[1] - center[1]) - size / 2, 0)
+            dx = max(abs(p[0] - center[0]) - size[0] / 2, 0)
+            dy = max(abs(p[1] - center[1]) - size[1] / 2, 0)
 
             distPoint = (dx,dy)
             return lenght(distPoint) - radius
@@ -99,8 +106,17 @@ class Player():
         for i in self.props:
             if(i.collisionType == "Box"):#l'objet avec le lequel on vérifie la collision à une hitbox carrée
                 if(DistBoxToCircle(self.colliderPos, i.collisionCenter,i.collisionSize, self.collideRadius)<= 0):
-                    self.rect.x = old_x
-                    self.rect.y = old_y
+
+                    IsXin = (self.colliderPos[0] > i.rect.x) and (self.colliderPos[0] < (i.rect.x + i.collisionSize[0]))
+                    IsYin = (self.colliderPos[1] > i.rect.y) and (self.colliderPos[1] < (i.rect.y + i.collisionSize[1]))
+
+                    if( not IsXin and IsYin):
+                        self.rect.x = old_x
+                    elif(IsXin and not IsYin):
+                        self.rect.y = old_y
+                    else:
+                        self.rect.x = old_x
+                        self.rect.y = old_y
                     self.colliderPos = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
 
             elif(i.collisionType == "Circle"):#l'objet avec le lequel on vérifie la collision à une hitbox ronde
@@ -110,4 +126,6 @@ class Player():
                     self.colliderPos = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
 
         self.screen.blit(self.image,self.rect)
-        pygame.draw.circle(self.screen, (255,0,0), self.colliderPos, self.collideRadius)
+
+        #collision debug : 
+        #pygame.draw.circle(self.screen, (255,0,0), self.colliderPos, self.collideRadius)

@@ -3,6 +3,7 @@ import os
 import sys
 from assets.objects.Player import Player
 from assets.objects.environnement.Wall import Wall
+from assets.objects.environnement.InvisibleWall import InvisibleWall
 
 #sys.path.append(os.path.abspath("/assets/objects/Player.py"))
 
@@ -27,11 +28,31 @@ def update_fps():
 	fps_text = font.render(fps, 1, pygame.Color("green"))
 	return fps_text
 
+IWallTop = InvisibleWall(screen, 0, 0, (1920,2))
+IWallLeft = InvisibleWall(screen, 0, 0, (2,1080))
+IWallRight = InvisibleWall(screen, 1918, 0, (2,1080))
+IWallDown = InvisibleWall(screen, 0, 1078, (1920,2))
+wall = Wall(screen, "wall.jpg", 600,150,(150,150))
 
-wall = Wall(screen, "wall.jpg", 300,300)
-wall1 = Wall(screen, "wall.jpg", 450,300)
 
-player = Player(screen, "Isaac.png", 1000,100,[wall, wall1])
+props = [IWallTop, IWallLeft, IWallRight, IWallDown, wall]
+
+
+# map = [[0,0,0,0,0,0,0,0,0,0,0,0],
+#        [0,0,0,0,0,0,0,0,0,0,0,0],
+#        [0,0,0,0,1,0,0,0,0,0,0,0],
+#        [0,0,0,0,0,0,0,0,0,0,0,0],
+#        [0,0,0,0,0,0,0,0,0,0,0,0],
+#        [0,0,1,0,0,0,1,0,0,0,0,0],
+#        [0,0,1,0,0,0,1,0,0,0,0,0]]
+
+# for y in range(len(map)):
+#   for x in map[y]:
+#     if(x == 1):
+#       props.append(Wall(screen, "wall.jpg", 150*x,150*y,(150,150)))
+
+
+player = Player(screen, "Isaac.png", 1000,100,props)
 
 img = pygame.image.load(os.path.join("assets/sprites/props", "Isaac's_Room_1.png")).convert_alpha()
 image = pygame.transform.scale(img, (1920,1080))
@@ -40,8 +61,10 @@ while running:
   screen.fill((0,0,0))
 
   screen.blit(image,(0,0))
-  wall.Draw()
-  wall1.Draw()
+
+  for Wall in props:
+    Wall.Draw()
+
   player.update()
   
   screen.blit(update_fps(), (10,0))
