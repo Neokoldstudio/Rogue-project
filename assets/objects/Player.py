@@ -21,15 +21,15 @@ class Player():
         
         self.sqrt2 = math.sqrt(2)
         self.img = pygame.image.load(os.path.join("assets/sprites/Main_character", sprite)).convert_alpha()
-        self.image = pygame.transform.scale(self.img, (110,150))
+        self.image = pygame.transform.scale(self.img, (450,450))
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.speed = 13
         self.props = props
-        self.colliderXOffset = 55
-        self.colliderYOffset = 120
-        self.collideRadius = 30
+        self.colliderXOffset = 225
+        self.colliderYOffset = 255
+        self.collideRadius = 20
         self.colliderPos = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
         self.hsp = 0
         self.vsp = 0

@@ -21,4 +21,3 @@ class InvisibleWall():
     def Draw(self):
         #pygame.draw.rect(self.screen, (0,0,255, 10), (self.rect.x,self.rect.y, self.rect.x + self.collisionSize[0],self.rect.y + self.collisionSize[1]))
         pass
-        

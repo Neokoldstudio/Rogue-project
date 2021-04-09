@@ -28,31 +28,16 @@ def update_fps():
 	fps_text = font.render(fps, 1, pygame.Color("green"))
 	return fps_text
 
-IWallTop = InvisibleWall(screen, 0, 0, (1920,2))
-IWallLeft = InvisibleWall(screen, 0, 0, (2,1080))
-IWallRight = InvisibleWall(screen, 1918, 0, (2,1080))
-IWallDown = InvisibleWall(screen, 0, 1078, (1920,2))
+IWallTop = InvisibleWall(screen, 0, 180, (1920,2))
+IWallLeft = InvisibleWall(screen, 200, 0, (2,1080))
+IWallRight = InvisibleWall(screen, 1718, 0, (2,1080))
+IWallDown = InvisibleWall(screen, 0, 888, (1920,2))
 wall = Wall(screen, "wall.jpg", 600,150,(150,150))
 
 
 props = [IWallTop, IWallLeft, IWallRight, IWallDown, wall]
 
-
-# map = [[0,0,0,0,0,0,0,0,0,0,0,0],
-#        [0,0,0,0,0,0,0,0,0,0,0,0],
-#        [0,0,0,0,1,0,0,0,0,0,0,0],
-#        [0,0,0,0,0,0,0,0,0,0,0,0],
-#        [0,0,0,0,0,0,0,0,0,0,0,0],
-#        [0,0,1,0,0,0,1,0,0,0,0,0],
-#        [0,0,1,0,0,0,1,0,0,0,0,0]]
-
-# for y in range(len(map)):
-#   for x in map[y]:
-#     if(x == 1):
-#       props.append(Wall(screen, "wall.jpg", 150*x,150*y,(150,150)))
-
-
-player = Player(screen, "Isaac.png", 1000,100,props)
+player = Player(screen, "test_idle.png", 1000,100,props)
 
 img = pygame.image.load(os.path.join("assets/sprites/props", "Isaac's_Room_1.png")).convert_alpha()
 image = pygame.transform.scale(img, (1920,1080))
