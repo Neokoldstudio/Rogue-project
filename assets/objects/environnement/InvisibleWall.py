@@ -6,13 +6,13 @@ pygame.init()
 
 class InvisibleWall():
 
-    def __init__(self, screen, x, y, size):
+    def __init__(self, screen, position, size):
 
         self.screen = screen
         self.collisionSize = size
-        self.rect = pygame.Rect(x,y,x+self.collisionSize[0], y+self.collisionSize[1])
-        self.rect.x = x
-        self.rect.y = y
+        self.rect = pygame.Rect(position[0],position[1],position[0]+self.collisionSize[0], position[1]+self.collisionSize[1])
+        self.rect.x = position[0]
+        self.rect.y = position[1]
         
         #parametres de collision : INDISPENSABLES
         self.collisionCenter = (self.rect.x + self.collisionSize[0]/2, self.rect.y+ self.collisionSize[1]/2) 

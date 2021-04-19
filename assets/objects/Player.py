@@ -8,7 +8,7 @@ pygame.init()
 pygame.joystick.init()
 
 class Player():
-    def __init__(self,screen, sprite, x, y, props):
+    def __init__(self,screen, sprite, position, props):
 
         self.joysticks=[pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
 
@@ -16,24 +16,29 @@ class Player():
             i.init()
 
         pygame.sprite.Sprite.__init__(self)
-
-        self.screen = screen
-        
         self.sqrt2 = math.sqrt(2)
+
+        #sprite and pos on the screen
+        self.screen = screen
         self.img = pygame.image.load(os.path.join("assets/sprites/Main_character", sprite)).convert_alpha()
         self.image = pygame.transform.scale(self.img, (450,450))
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.speed = 13
-        self.props = props
+        self.rect.x = position[0]
+        self.rect.y = position[1]
+
+        #collisions relatives variables
+        self.collisionType = "Circle"
         self.colliderXOffset = 225
         self.colliderYOffset = 255
         self.collideRadius = 20
         self.colliderPos = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
+
+        #movement variables
+        self.speed = 13
+        self.props = props
         self.hsp = 0
         self.vsp = 0
-
+       
     def update(self):
         #all "physics" functions
         def Lerp(spd, wantedSpeed):
