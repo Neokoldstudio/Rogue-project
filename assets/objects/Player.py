@@ -2,6 +2,7 @@ import math
 import numpy
 import pygame
 import os
+from scripts import MovementRelatives as physics
 
 
 pygame.init()
@@ -31,7 +32,7 @@ class Player():
         self.colliderXOffset = 225
         self.colliderYOffset = 255
         self.collideRadius = 20
-        self.colliderPos = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
+        self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
 
         #movement variables
         self.speed = 13
@@ -40,31 +41,7 @@ class Player():
         self.vsp = 0
        
     def update(self):
-        #all "physics" functions
-        def Lerp(spd, wantedSpeed):
-            return(spd * 0.8 + wantedSpeed*0.2)
-
-        def lenght(v):
-            return (math.sqrt(v[0]*v[0] + v[1]*v[1]))
-
-        # def DistBox(p,center, size):
-        #     dx = max(abs(p[0] - center[0]) - size / 2, 0)
-        #     dy = max(abs(p[1] - center[1]) - size / 2, 0)
-
-        #     distPoint = (dx,dy)
-        #     return lenght(distPoint)
-
-        def DistCircleToCircle(p1, p2, radius1, radius2):
-            distTpl = (p2[0]-p1[0], p2[1]-p1[1])
-            return(lenght(distTpl)-(radius1+radius2))
         
-        def DistBoxToCircle(p, center, size, radius):
-            dx = max(abs(p[0] - center[0]) - size[0] / 2, 0)
-            dy = max(abs(p[1] - center[1]) - size[1] / 2, 0)
-
-            distPoint = (dx,dy)
-            return lenght(distPoint) - radius
-
         key = pygame.key.get_pressed()
         old_x, old_y = self.rect.x, self.rect.y
 
@@ -98,22 +75,22 @@ class Player():
                 VerDir = VerDir / self.sqrt2
 
         #une fonction lerp gère l'accélération et la décélération du personnage
-        self.hsp = Lerp(self.hsp, HorDir * self.speed)
-        self.vsp = Lerp(self.vsp, VerDir * self.speed)
+        self.hsp = physics.Lerp(self.hsp, HorDir * self.speed)
+        self.vsp = physics.Lerp(self.vsp, VerDir * self.speed)
 
         #on change la position du joueur en y ajoutant les varibles hsp et vsp
         self.rect.x += round(self.hsp)
         self.rect.y += round(self.vsp)
-        self.colliderPos = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)#on change aussi la position du collider
+        self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)#on change aussi la position du collider
 
         #collisions :
 
         for i in self.props:
             if(i.collisionType == "Box"):#l'objet avec le lequel on vérifie la collision à une hitbox carrée
-                if(DistBoxToCircle(self.colliderPos, i.collisionCenter,i.collisionSize, self.collideRadius)<= 0):
+                if(physics.DistBoxToCircle(self.collisionCenter, i.collisionCenter,i.collisionSize, self.collideRadius)<= 0):
 
-                    IsXin = (self.colliderPos[0] > i.rect.x) and (self.colliderPos[0] < (i.rect.x + i.collisionSize[0]))
-                    IsYin = (self.colliderPos[1] > i.rect.y) and (self.colliderPos[1] < (i.rect.y + i.collisionSize[1]))
+                    IsXin = (self.collisionCenter[0] > i.rect.x) and (self.collisionCenter[0] < (i.rect.x + i.collisionSize[0]))
+                    IsYin = (self.collisionCenter[1] > i.rect.y) and (self.collisionCenter[1] < (i.rect.y + i.collisionSize[1]))
 
                     if( not IsXin and IsYin):
                         self.rect.x = old_x
@@ -122,15 +99,14 @@ class Player():
                     else:
                         self.rect.x = old_x
                         self.rect.y = old_y
-                    self.colliderPos = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
+                    self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
 
             elif(i.collisionType == "Circle"):#l'objet avec le lequel on vérifie la collision à une hitbox ronde
-                if(DistCircleToCircle(self.colliderPos, i.collisionCenter, self.collideRadius, i.collideRadius) <= 0):
-                    self.rect.x = old_x
-                    self.rect.y = old_y
-                    self.colliderPos = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
+                if(physics.DistCircleToCircle(self.collisionCenter, i.collisionCenter, self.collideRadius, i.collideRadius) <= 0):
+                    #ici : écrire le code gérant les réactions du joueur à une collisions avec une entitée n'étant pas un mur ( ex : prendre des dégats, etc ... ) 
+                    pass
 
         self.screen.blit(self.image,self.rect)
 
         #collision debug : 
-        #pygame.draw.circle(self.screen, (255,0,0), self.colliderPos, self.collideRadius)
+        #pygame.draw.circle(self.screen, (255,0,0), self.collisionCenter, self.collideRadius)

@@ -2,7 +2,7 @@ import pygame
 import os
 import sys
 from assets.objects.Player import Player
-from assets.objects.ennemies import Ennemies
+from assets.objects.enemies.Enemies import Enemy
 from assets.objects.environnement.Wall import Wall
 from assets.objects.environnement.InvisibleWall import InvisibleWall
 
@@ -35,10 +35,12 @@ IWallRight = InvisibleWall(screen, (1718, 0), (2,1080))
 IWallDown = InvisibleWall(screen, (0, 888), (1920,2))
 wall = Wall(screen, "wall.jpg", (600,150),(150,150))
 
-
 props = [IWallTop, IWallLeft, IWallRight, IWallDown, wall]
 
 player = Player(screen, "test_idle.png", (1000,100),props)
+
+Enemy1 = Enemy(screen, "IsaacZombie.png", (300,200),player, props)
+props.append(Enemy1)
 
 img = pygame.image.load(os.path.join("assets/sprites/props", "Isaac's_Room_1.png")).convert_alpha()
 image = pygame.transform.scale(img, (1920,1080))
