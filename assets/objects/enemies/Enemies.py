@@ -47,8 +47,10 @@ class Enemy():
             
             GoToVec = ((GoToVec[0]/distance)*self.speed,(GoToVec[1]/distance)*self.speed)
 
-            self.rect.x += GoToVec[0]
-            self.rect.y += GoToVec[1]
+            self.hsp, self.vsp = physics.Lerp(self.hsp, GoToVec[0], 0.8), physics.Lerp(self.vsp, GoToVec[1], 0.8)
+
+            self.rect.x += self.hsp
+            self.rect.y += self.vsp
 
             self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
 

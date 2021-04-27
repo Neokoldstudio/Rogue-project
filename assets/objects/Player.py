@@ -3,6 +3,7 @@ import numpy
 import pygame
 import os
 from scripts import MovementRelatives as physics
+from threading import Timer
 
 
 pygame.init()
@@ -34,13 +35,19 @@ class Player():
         self.collideRadius = 20
         self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
 
-        #movement variables
+        #player variables
+        self.hp = 5
+        self.hit = False
         self.speed = 13
         self.props = props
         self.hsp = 0
         self.vsp = 0
+        self.invincibilityCooldown = 3.0 
        
     def update(self):
+
+        def invicEnd():
+                self.hit = False
         
         key = pygame.key.get_pressed()
         old_x, old_y = self.rect.x, self.rect.y
@@ -75,8 +82,8 @@ class Player():
                 VerDir = VerDir / self.sqrt2
 
         #une fonction lerp gère l'accélération et la décélération du personnage
-        self.hsp = physics.Lerp(self.hsp, HorDir * self.speed)
-        self.vsp = physics.Lerp(self.vsp, VerDir * self.speed)
+        self.hsp = physics.Lerp(self.hsp, HorDir * self.speed,0.8)
+        self.vsp = physics.Lerp(self.vsp, VerDir * self.speed,0.8)
 
         #on change la position du joueur en y ajoutant les varibles hsp et vsp
         self.rect.x += round(self.hsp)
@@ -103,8 +110,18 @@ class Player():
 
             elif(i.collisionType == "Circle"):#l'objet avec le lequel on vérifie la collision à une hitbox ronde
                 if(physics.DistCircleToCircle(self.collisionCenter, i.collisionCenter, self.collideRadius, i.collideRadius) <= 0):
-                    #ici : écrire le code gérant les réactions du joueur à une collisions avec une entitée n'étant pas un mur ( ex : prendre des dégats, etc ... ) 
-                    pass
+                    if(i.EntityType == "Ennemy" and not self.hit):
+                        self.hit = True
+                        self.hp -= 1
+
+                        if(self.hp <= 0):
+                            self.hp = 0
+                            #logique de la mort du perso
+
+                        t = Timer(self.invincibilityCooldown, invicEnd)
+                        t.start()
+
+                        print(self.hp)
 
         self.screen.blit(self.image,self.rect)
 

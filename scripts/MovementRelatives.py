@@ -1,8 +1,8 @@
 import math
 
 #all "physics" functions, relatives to the movements
-def Lerp(spd, wantedSpeed):
-    return(spd * 0.8 + wantedSpeed*0.2)
+def Lerp(spd, wantedSpeed, transition):
+    return(spd * transition + wantedSpeed*(1-transition))
 
 def lenght(v):
     return (math.sqrt(v[0]*v[0] + v[1]*v[1]))

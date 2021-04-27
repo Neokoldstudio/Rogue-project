@@ -12,8 +12,8 @@ pygame.init()
 
 #screen_width, screen_height = 1000,1000
 
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-#screen = pygame.display.set_mode((300, 300))
+#screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((600, 600))
 
 pygame.display.set_caption("Rogue Like")
 
