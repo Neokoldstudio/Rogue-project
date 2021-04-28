@@ -12,8 +12,8 @@ pygame.init()
 
 #screen_width, screen_height = 1000,1000
 
-#screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-screen = pygame.display.set_mode((600, 600))
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+#screen = pygame.display.set_mode((600, 600))
 
 pygame.display.set_caption("Rogue Like")
 
@@ -41,6 +41,15 @@ player = Player(screen, "test_idle.png", (1000,100),props)
 
 Enemy1 = Enemy(screen, "IsaacZombie.png", (300,200),player, props)
 props.append(Enemy1)
+
+Entity = []
+
+for i in props:
+  try:
+    if(i.EntityType):
+      Entity.append(i)
+  except:
+    pass
 
 img = pygame.image.load(os.path.join("assets/sprites/props", "Isaac's_Room_1.png")).convert_alpha()
 image = pygame.transform.scale(img, (1920,1080))
