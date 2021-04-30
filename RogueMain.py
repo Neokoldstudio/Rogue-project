@@ -40,7 +40,13 @@ props = [IWallTop, IWallLeft, IWallRight, IWallDown, wall]
 player = Player(screen, "test_idle.png", (1000,100),props)
 
 Enemy1 = Enemy(screen, "IsaacZombie.png", (300,200),player, props)
+Enemy2 = Enemy(screen, "IsaacZombie.png", (500,400),player, props)
+Enemy3 = Enemy(screen, "IsaacZombie.png", (300,500),player, props)
+Enemy4 = Enemy(screen, "IsaacZombie.png", (900,300),player, props)
 props.append(Enemy1)
+props.append(Enemy2)
+props.append(Enemy3)
+props.append(Enemy4)
 
 Entity = []
 
@@ -55,14 +61,29 @@ img = pygame.image.load(os.path.join("assets/sprites/props", "Isaac's_Room_1.png
 image = pygame.transform.scale(img, (1920,1080))
 
 while running:
+  up,down = [],[]
+
+  for i in (Entity):
+    if(i.rect.x < player.rect.x):
+      down.append(i)
+    else:
+      up.append(i)
+      
   screen.fill((0,0,0))
 
   screen.blit(image,(0,0))
 
   for Wall in props:
-    Wall.Draw()
+    if(Wall not in Entity):
+      Wall.Draw()
+
+  for Ent in up:
+    Ent.Draw()
 
   player.update()
+
+  for Ent in down:
+    Ent.Draw()
   
   screen.blit(update_fps(), (10,0))
   

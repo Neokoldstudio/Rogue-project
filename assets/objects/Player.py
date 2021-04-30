@@ -36,18 +36,30 @@ class Player():
         self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
 
         #player variables
-        self.hp = 5
+        self.hp = 6
         self.hit = False
         self.speed = 13
         self.props = props
         self.hsp = 0
         self.vsp = 0
-        self.invincibilityCooldown = 3.0 
+        self.invincibilityCooldown = 1.0 
+
+    def Draw(self): pass
        
     def update(self):
 
         def invicEnd():
-                self.hit = False
+            self.hit = False
+        def FlashEnd():
+            x,y = self.rect.x, self.rect.y
+
+            self.img = pygame.image.load(os.path.join("assets/sprites/Main_character", "test_idle.png")).convert_alpha()
+            self.image = pygame.transform.scale(self.img, (450,450))
+            self.rect = self.image.get_rect()
+
+            self.rect.x = x
+            self.rect.y = y
+            
         
         key = pygame.key.get_pressed()
         old_x, old_y = self.rect.x, self.rect.y
@@ -108,9 +120,10 @@ class Player():
                         self.rect.y = old_y
                     self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
 
-            elif(i.collisionType == "Circle"):#l'objet avec le lequel on vérifie la collision à une hitbox ronde
+            elif(i.collisionType == "Circle" and i != self):#l'objet avec le lequel on vérifie la collision à une hitbox ronde
                 if(physics.DistCircleToCircle(self.collisionCenter, i.collisionCenter, self.collideRadius, i.collideRadius) <= 0):
-                    if(i.EntityType == "Ennemy" and not self.hit):
+
+                    if(i.EntityType == "Enemy" and not self.hit):
                         self.hit = True
                         self.hp -= 1
 
@@ -118,12 +131,23 @@ class Player():
                             self.hp = 0
                             #logique de la mort du perso
 
+                        x,y = self.rect.x, self.rect.y
+
+                        self.img = pygame.image.load(os.path.join("assets/sprites/Main_character", "test_idle_flash.png")).convert_alpha()
+                        self.image = pygame.transform.scale(self.img, (450,450))
+                        self.rect = self.image.get_rect()
+
+                        self.rect.x = x
+                        self.rect.y = y
+
                         t = Timer(self.invincibilityCooldown, invicEnd)
+                        flash = Timer(self.invincibilityCooldown/7, FlashEnd)
                         t.start()
+                        flash.start()
 
                         print(self.hp)
 
         self.screen.blit(self.image,self.rect)
 
         #collision debug : 
-        #pygame.draw.circle(self.screen, (255,0,0), self.collisionCenter, self.collideRadius)
+        pygame.draw.circle(self.screen, (255,0,0), self.collisionCenter, self.collideRadius)

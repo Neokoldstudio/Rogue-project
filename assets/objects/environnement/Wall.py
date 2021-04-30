@@ -23,5 +23,6 @@ class Wall():
     def Draw(self):
 
         self.screen.blit(self.image,self.rect)
-        
-        
+
+        #collision debug
+        #pygame.draw.rect(self.screen, (255,0,0), (self.rect.x,self.rect.y, self.collisionCenter[0],self.collisionCenter[1])) <--- doesn't work

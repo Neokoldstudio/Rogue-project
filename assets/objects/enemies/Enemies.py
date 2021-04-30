@@ -19,7 +19,7 @@ class Enemy():
         #collisions relatives variables
         self.props = props
         self.collisionType = "Circle"
-        self.EntityType = "Ennemy"
+        self.EntityType = "Enemy"
         self.colliderXOffset = 35
         self.colliderYOffset = 70
         self.collideRadius = 30
@@ -28,14 +28,14 @@ class Enemy():
         #pathfinding varibles
         self.target = target
        
-        #movement variables
+        #ennemy variables
         self.speed = 5
         self.hsp = 0
         self.vsp = 0
+        self.hp = 5
 
         #debug variables:
         self.debug = False
-        
 
     def Draw(self):
 
@@ -43,33 +43,41 @@ class Enemy():
         GoToVec = (self.target.collisionCenter[0] - self.collisionCenter[0], self.target.collisionCenter[1] - self.collisionCenter[1])
         distance = physics.lenght(GoToVec)
 
-        if(distance > 2):
-            
-            GoToVec = ((GoToVec[0]/distance)*self.speed,(GoToVec[1]/distance)*self.speed)
+        GoToVec = ((GoToVec[0]/distance)*self.speed,(GoToVec[1]/distance)*self.speed)
 
+        if(distance > 1):
+            
             self.hsp, self.vsp = physics.Lerp(self.hsp, GoToVec[0], 0.8), physics.Lerp(self.vsp, GoToVec[1], 0.8)
 
             self.rect.x += self.hsp
             self.rect.y += self.vsp
 
-            self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
+            self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)  
 
         for i in self.props:
-            if(i.collisionType == "Box"):#l'objet avec le lequel on vérifie la collision à une hitbox carrée
-                if(physics.DistBoxToCircle(self.collisionCenter, i.collisionCenter,i.collisionSize, self.collideRadius)<= 0):
+                if(i.collisionType == "Box"):#l'objet avec le lequel on vérifie la collision à une hitbox carrée
+                    if(physics.DistBoxToCircle(self.collisionCenter, i.collisionCenter,i.collisionSize, self.collideRadius)<= 0):
 
-                    IsXin = (self.collisionCenter[0] > i.rect.x) and (self.collisionCenter[0] < (i.rect.x + i.collisionSize[0]))
-                    IsYin = (self.collisionCenter[1] > i.rect.y) and (self.collisionCenter[1] < (i.rect.y + i.collisionSize[1]))
+                        IsXin = (self.collisionCenter[0] > i.rect.x) and (self.collisionCenter[0] < (i.rect.x + i.collisionSize[0]))
+                        IsYin = (self.collisionCenter[1] > i.rect.y) and (self.collisionCenter[1] < (i.rect.y + i.collisionSize[1]))
 
-                    if( not IsXin and IsYin):
-                        self.rect.x = old_x
-                    elif(IsXin and not IsYin):
-                        self.rect.y = old_y
-                    else:
-                        self.rect.x = old_x
-                        self.rect.y = old_y
-                    self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
-            
+                        if( not IsXin and IsYin):
+                            self.rect.x = old_x
+                        elif(IsXin and not IsYin):
+                            self.rect.y = old_y
+                        else:
+                            self.rect.x = old_x
+                            self.rect.y = old_y
+                        self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset) 
+        
+        if(physics.DistCircleToCircle(self.collisionCenter, self.target.collisionCenter, self.collideRadius, self.target.collideRadius) <= -1): #collision avec le joueur
+
+            self.hsp, self.vsp = physics.Lerp(self.hsp, GoToVec[0]*(-self.speed), 0.8), physics.Lerp(self.vsp, GoToVec[1]*(-self.speed), 0.8) #/!\ le joueur peut pousser les mobs dans le mur et les bloquer /!\
+
+            self.rect.x += self.hsp
+            self.rect.y += self.vsp
+
+            self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
 
         self.screen.blit(self.image, self.rect)
 
