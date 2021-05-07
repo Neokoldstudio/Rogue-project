@@ -6,12 +6,14 @@ from scripts import MovementRelatives as physics
 pygame.init()
 
 class Enemy():
-    def __init__(self,screen, sprite, position, target, props):
+    def __init__(self,screen, position, target, props, enemyType):
 
         #sprite and pos on the screen
+        self.enemyType = enemyType
+        self.selector = {"Zombie" : (1,"IsaacZombie.png", (70,100), (35,70,30)), "Fly" : (2,"fly.png",(50,50),(25,25,10))}
         self.screen = screen
-        self.img = pygame.image.load(os.path.join("assets/sprites/ennemies", sprite)).convert_alpha()
-        self.image = pygame.transform.scale(self.img, (70,100))
+        self.img = pygame.image.load(os.path.join("assets/sprites/ennemies", self.selector[self.enemyType][1])).convert_alpha()
+        self.image = pygame.transform.scale(self.img, self.selector[self.enemyType][2])
         self.rect = self.image.get_rect()
         self.rect.x = position[0]
         self.rect.y = position[1]
@@ -20,15 +22,16 @@ class Enemy():
         self.props = props
         self.collisionType = "Circle"
         self.EntityType = "Enemy"
-        self.colliderXOffset = 35
-        self.colliderYOffset = 70
-        self.collideRadius = 30
+        self.colliderXOffset = self.selector[self.enemyType][3][0]
+        self.colliderYOffset = self.selector[self.enemyType][3][1]
+        self.collideRadius = self.selector[self.enemyType][3][2]
         self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
 
         #pathfinding varibles
         self.target = target
        
         #ennemy variables
+        self.enemyIndex = self.selector[enemyType][0]
         self.speed = 5
         self.hsp = 0
         self.vsp = 0
@@ -38,51 +41,95 @@ class Enemy():
         self.debug = False
 
     def Draw(self):
+        def Zombie():
+            old_x, old_y = self.rect.x, self.rect.y
+            GoToVec = (self.target.collisionCenter[0] - self.collisionCenter[0], self.target.collisionCenter[1] - self.collisionCenter[1])
+            distance = physics.lenght(GoToVec)
 
-        old_x, old_y = self.rect.x, self.rect.y
-        GoToVec = (self.target.collisionCenter[0] - self.collisionCenter[0], self.target.collisionCenter[1] - self.collisionCenter[1])
-        distance = physics.lenght(GoToVec)
+            GoToVec = ((GoToVec[0]/distance)*self.speed,(GoToVec[1]/distance)*self.speed)
 
-        GoToVec = ((GoToVec[0]/distance)*self.speed,(GoToVec[1]/distance)*self.speed)
+            if(distance > 1):
+                
+                self.hsp, self.vsp = physics.Lerp(self.hsp, GoToVec[0], 0.8), physics.Lerp(self.vsp, GoToVec[1], 0.8)
 
-        if(distance > 1):
+                self.rect.x += self.hsp
+                self.rect.y += self.vsp
+
+                self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)  
+
+            for i in self.props:
+                    if(i.collisionType == "Box"):#l'objet avec le lequel on vérifie la collision à une hitbox carrée
+                        if(physics.DistBoxToCircle(self.collisionCenter, i.collisionCenter,i.collisionSize, self.collideRadius)<= 0):
+
+                            IsXin = (self.collisionCenter[0] > i.rect.x) and (self.collisionCenter[0] < (i.rect.x + i.collisionSize[0]))
+                            IsYin = (self.collisionCenter[1] > i.rect.y) and (self.collisionCenter[1] < (i.rect.y + i.collisionSize[1]))
+
+                            if( not IsXin and IsYin):
+                                self.rect.x = old_x
+                            elif(IsXin and not IsYin):
+                                self.rect.y = old_y
+                            else:
+                                self.rect.x = old_x
+                                self.rect.y = old_y
+                            self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset) 
             
-            self.hsp, self.vsp = physics.Lerp(self.hsp, GoToVec[0], 0.8), physics.Lerp(self.vsp, GoToVec[1], 0.8)
+            if(physics.DistCircleToCircle(self.collisionCenter, self.target.collisionCenter, self.collideRadius, self.target.collideRadius) <= -1): #collision avec le joueur
 
-            self.rect.x += self.hsp
-            self.rect.y += self.vsp
+                self.hsp, self.vsp = physics.Lerp(self.hsp, GoToVec[0]*(-self.speed), 0.8), physics.Lerp(self.vsp, GoToVec[1]*(-self.speed), 0.8) #/!\ le joueur peut pousser les mobs dans le mur et les bloquer /!\
 
-            self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)  
+                self.rect.x += self.hsp
+                self.rect.y += self.vsp
 
-        for i in self.props:
-                if(i.collisionType == "Box"):#l'objet avec le lequel on vérifie la collision à une hitbox carrée
-                    if(physics.DistBoxToCircle(self.collisionCenter, i.collisionCenter,i.collisionSize, self.collideRadius)<= 0):
+                self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
 
-                        IsXin = (self.collisionCenter[0] > i.rect.x) and (self.collisionCenter[0] < (i.rect.x + i.collisionSize[0]))
-                        IsYin = (self.collisionCenter[1] > i.rect.y) and (self.collisionCenter[1] < (i.rect.y + i.collisionSize[1]))
+            self.screen.blit(self.image, self.rect)
 
-                        if( not IsXin and IsYin):
-                            self.rect.x = old_x
-                        elif(IsXin and not IsYin):
-                            self.rect.y = old_y
-                        else:
-                            self.rect.x = old_x
-                            self.rect.y = old_y
-                        self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset) 
+            #collision and targetting debug : 
+            if(self.debug):
+                pygame.draw.circle(self.screen, (255,0,0), self.collisionCenter, self.collideRadius)
+                #pygame.draw.line(self.screen, (0,255,0), self.collisionCenter, (GoToVec[0] + self.collisionCenter[0], GoToVec[1] + self.collisionCenter[1]), width = 3)
+                #pygame.draw.line(self.screen, (255,0,0), self.collisionCenter, self.target.collisionCenter, width = 1)
+
+        def Fly():
+            GoToVec = (self.target.collisionCenter[0] - self.collisionCenter[0], self.target.collisionCenter[1] - self.collisionCenter[1])
+            distance = physics.lenght(GoToVec)
+
+            GoToVec = ((GoToVec[0]/distance)*self.speed,(GoToVec[1]/distance)*self.speed)
+
+            if(distance > 1):
+                
+                self.hsp, self.vsp = physics.Lerp(self.hsp, GoToVec[0], 0.8), physics.Lerp(self.vsp, GoToVec[1], 0.8)
+
+                self.rect.x += self.hsp
+                self.rect.y += self.vsp
+
+                self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)  
+
+            if(physics.DistCircleToCircle(self.collisionCenter, self.target.collisionCenter, self.collideRadius, self.target.collideRadius) <= -1): #collision avec le joueur
+
+                self.hsp, self.vsp = physics.Lerp(self.hsp, GoToVec[0]*(-self.speed), 0.8), physics.Lerp(self.vsp, GoToVec[1]*(-self.speed), 0.8) #/!\ le joueur peut pousser les mobs dans le mur et les bloquer /!\
+
+                self.rect.x += self.hsp
+                self.rect.y += self.vsp
+
+                self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
+
+            self.screen.blit(self.image, self.rect)
+
+            #collision and targetting debug : 
+            if(self.debug):
+                pygame.draw.circle(self.screen, (255,0,0), self.collisionCenter, self.collideRadius)
+                #pygame.draw.line(self.screen, (0,255,0), self.collisionCenter, (GoToVec[0] + self.collisionCenter[0], GoToVec[1] + self.collisionCenter[1]), width = 3)
+                #pygame.draw.line(self.screen, (255,0,0), self.collisionCenter, self.target.collisionCenter, width = 1)
+
+
+        def switchState(enemyType):
+            switcher = {
+                1: Zombie,
+                2: Fly,
+            }
+            
+            func = switcher.get(enemyType)
+            func()
         
-        if(physics.DistCircleToCircle(self.collisionCenter, self.target.collisionCenter, self.collideRadius, self.target.collideRadius) <= -1): #collision avec le joueur
-
-            self.hsp, self.vsp = physics.Lerp(self.hsp, GoToVec[0]*(-self.speed), 0.8), physics.Lerp(self.vsp, GoToVec[1]*(-self.speed), 0.8) #/!\ le joueur peut pousser les mobs dans le mur et les bloquer /!\
-
-            self.rect.x += self.hsp
-            self.rect.y += self.vsp
-
-            self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
-
-        self.screen.blit(self.image, self.rect)
-
-        #collision and targetting debug : 
-        if(self.debug):
-            pygame.draw.circle(self.screen, (255,0,0), self.collisionCenter, self.collideRadius)
-            pygame.draw.line(self.screen, (0,255,0), self.collisionCenter, (GoToVec[0] + self.collisionCenter[0], GoToVec[1] + self.collisionCenter[1]), width = 3)
-            pygame.draw.line(self.screen, (255,0,0), self.collisionCenter, self.target.collisionCenter, width = 1)
+        switchState(self.enemyIndex)

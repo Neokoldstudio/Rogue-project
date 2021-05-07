@@ -94,8 +94,8 @@ class Player():
                 VerDir = VerDir / self.sqrt2
 
         #une fonction lerp gère l'accélération et la décélération du personnage
-        self.hsp = physics.Lerp(self.hsp, HorDir * self.speed,0.8)
-        self.vsp = physics.Lerp(self.vsp, VerDir * self.speed,0.8)
+        self.hsp = physics.Lerp(self.hsp, HorDir * self.speed,0.87)
+        self.vsp = physics.Lerp(self.vsp, VerDir * self.speed,0.87)
 
         #on change la position du joueur en y ajoutant les varibles hsp et vsp
         self.rect.x += round(self.hsp)
@@ -150,4 +150,4 @@ class Player():
         self.screen.blit(self.image,self.rect)
 
         #collision debug : 
-        pygame.draw.circle(self.screen, (255,0,0), self.collisionCenter, self.collideRadius)
+        #pygame.draw.circle(self.screen, (255,0,0), self.collisionCenter, self.collideRadius)

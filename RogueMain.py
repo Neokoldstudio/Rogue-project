@@ -39,14 +39,8 @@ props = [IWallTop, IWallLeft, IWallRight, IWallDown, wall]
 
 player = Player(screen, "test_idle.png", (1000,100),props)
 
-Enemy1 = Enemy(screen, "IsaacZombie.png", (300,200),player, props)
-Enemy2 = Enemy(screen, "IsaacZombie.png", (500,400),player, props)
-Enemy3 = Enemy(screen, "IsaacZombie.png", (300,500),player, props)
-Enemy4 = Enemy(screen, "IsaacZombie.png", (900,300),player, props)
+Enemy1 = Enemy(screen, (300,200),player, props,"Fly")
 props.append(Enemy1)
-props.append(Enemy2)
-props.append(Enemy3)
-props.append(Enemy4)
 
 Entity = []
 
@@ -64,7 +58,7 @@ while running:
   up,down = [],[]
 
   for i in (Entity):
-    if(i.rect.x < player.rect.x):
+    if(i.rect.y < player.rect.y):
       down.append(i)
     else:
       up.append(i)
