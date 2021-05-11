@@ -3,6 +3,7 @@ import numpy
 import pygame
 import os
 from scripts import MovementRelatives as physics
+from assets.objects.PlayerSword import Sword
 from threading import Timer
 
 
@@ -37,18 +38,25 @@ class Player():
 
         #player variables
         self.hp = 6
+        self.kill = True
         self.hit = False
         self.speed = 13
         self.props = props
         self.hsp = 0
         self.vsp = 0
-        self.invincibilityCooldown = 1.0 
+        self.invincibilityCooldown = 1.0
+        self.SwordList = []
 
     def Draw(self): pass
        
     def update(self):
 
-        def invicEnd():
+        HitPos = {(0,1):Sword(self.screen, (self.collisionCenter[0] + 40, self.collisionCenter[1]-40), (80,80)), #dictionnaire faisant correspondre les inputs  
+                       (0,-1):Sword(self.screen, (self.collisionCenter[0] - 100, self.collisionCenter[1] - 30), (80,80)),
+                       (-1,0):Sword(self.screen, (self.collisionCenter[0] - 35, self.collisionCenter[1]-100), (80,80)),
+                       (1,0):Sword(self.screen, (self.collisionCenter[0] - 30, self.collisionCenter[1] + 40), (80,80))}
+
+        def invicEnd(): #les quatres fonctions qui suivent gèrent des cooldown, FlashEnd permet de faire passer le personnage en blanc
             self.hit = False
         def FlashEnd():
             x,y = self.rect.x, self.rect.y
@@ -59,17 +67,21 @@ class Player():
 
             self.rect.x = x
             self.rect.y = y
-            
-        
+        def HitCool():
+            self.kill = True
+        def HitDelete():
+            self.SwordList.pop()
+
         key = pygame.key.get_pressed()
         old_x, old_y = self.rect.x, self.rect.y
 
         #Manette détectée : mouvements gérés par cette dernière
         if (self.joysticks != []):
 
-            JoyMoving = (abs(self.joysticks[0].get_axis(1)) > 0.2) or (abs(self.joysticks[0].get_axis(0)) > 0.2)
+            JoyMoving_left = (abs(self.joysticks[0].get_axis(1)) > 0.2) or (abs(self.joysticks[0].get_axis(0)) > 0.2)
+            JoyMoving_right = (abs(self.joysticks[0].get_axis(3)) > 0.2) or (abs(self.joysticks[0].get_axis(2)) > 0.2)
 
-            if(JoyMoving):#la valeur retournée par les sticks est superieure à 0.2
+            if(JoyMoving_left):#la valeur retournée par les sticks est superieure à 0.2
                 VerDir = self.joysticks[0].get_axis(1)#-
                 HorDir = self.joysticks[0].get_axis(0)# | - la direction est égale à la valeur retournée par les sticks
  
@@ -77,13 +89,33 @@ class Player():
                 VerDir = 0
                 HorDir = 0
 
+            if(JoyMoving_right and self.kill):
+                self.kill = False
+                if(abs(self.joysticks[0].get_axis(3)) > abs(self.joysticks[0].get_axis(2))) : HitList = (numpy.sign(self.joysticks[0].get_axis(3)), 0)
+                else:HitList = (0, numpy.sign(self.joysticks[0].get_axis(2)))
+
+                self.SwordList.append(HitPos[HitList])
+
+                self.SwordList[0].Draw()
+
+                t = Timer(self.invincibilityCooldown/3, HitCool)
+                t2 = Timer(self.invincibilityCooldown/10, HitDelete)
+                t.start()
+                t2.start()
+
         #sinon : mouvements gérés par le clavier
         else:
-            
+            #détection des touches pour le déplacement
             KeyLeft = key[pygame.K_q]
             KeyRight = key[pygame.K_d]
             KeyUp = key[pygame.K_z]
             KeyDown = key[pygame.K_s]
+
+            #détection des touches pour frapper
+            HitLeft = key[pygame.K_LEFT]
+            HitRight = key[pygame.K_RIGHT]
+            HitUp = key[pygame.K_UP]
+            HitDown = key[pygame.K_DOWN]
 
             #calcul de la direction horizontale et verticale
             HorDir = KeyRight - KeyLeft
@@ -92,6 +124,24 @@ class Player():
             if(HorDir*VerDir != 0):
                 HorDir = HorDir / self.sqrt2
                 VerDir = VerDir / self.sqrt2
+
+            HorHit = HitRight - HitLeft
+            VerHit = HitDown - HitUp
+
+            if(self.kill and (HorHit, VerHit)!=(0,0)):
+                self.kill = False
+
+                if((HorHit,VerHit) in HitPos):
+                    HitList = (VerHit,HorHit)
+
+                self.SwordList.append(HitPos[HitList])
+
+                self.SwordList[0].Draw()
+
+                t = Timer(self.invincibilityCooldown/3, HitCool)
+                t2 = Timer(self.invincibilityCooldown/10, HitDelete)
+                t.start()
+                t2.start()
 
         #une fonction lerp gère l'accélération et la décélération du personnage
         self.hsp = physics.Lerp(self.hsp, HorDir * self.speed,0.87)
@@ -150,4 +200,4 @@ class Player():
         self.screen.blit(self.image,self.rect)
 
         #collision debug : 
-        #pygame.draw.circle(self.screen, (255,0,0), self.collisionCenter, self.collideRadius)
+        pygame.draw.circle(self.screen, (255,0,0), self.collisionCenter, self.collideRadius)

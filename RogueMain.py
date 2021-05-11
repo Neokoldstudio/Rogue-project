@@ -29,6 +29,8 @@ def update_fps():
 	fps_text = font.render(fps, 1, pygame.Color("green"))
 	return fps_text
 
+
+#création de toutes les instances des objets 
 IWallTop = InvisibleWall(screen, (0, 180), (1920,2))
 IWallLeft = InvisibleWall(screen, (200, 0), (2,1080))
 IWallRight = InvisibleWall(screen, (1718, 0), (2,1080))
@@ -40,8 +42,12 @@ props = [IWallTop, IWallLeft, IWallRight, IWallDown, wall]
 player = Player(screen, "test_idle.png", (1000,100),props)
 
 Enemy1 = Enemy(screen, (300,200),player, props,"Fly")
+Enemy2 = Enemy(screen, (500,200),player, props,"Zombie")
+Enemy3 = Enemy(screen, (600,200),player, props,"Fly")
 props.append(Enemy1)
-
+props.append(Enemy2)
+props.append(Enemy3)
+#fin de la création de toutes les instances
 Entity = []
 
 for i in props:
@@ -57,7 +63,7 @@ image = pygame.transform.scale(img, (1920,1080))
 while running:
   up,down = [],[]
 
-  for i in (Entity):
+  for i in Entity:
     if(i.rect.y < player.rect.y):
       down.append(i)
     else:
@@ -79,6 +85,12 @@ while running:
   for Ent in down:
     Ent.Draw()
   
+  for i in Entity:
+    if(i.EntityType == "Enemy"):
+      if(i.hp <= 0): 
+        props.pop(props.index(i))
+        Entity.pop(Entity.index(i))
+
   screen.blit(update_fps(), (10,0))
   
   for event in pygame.event.get():
