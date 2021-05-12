@@ -6,6 +6,15 @@ from assets.objects.enemies.Enemies import Enemy
 from assets.objects.environnement.Wall import Wall
 from assets.objects.environnement.InvisibleWall import InvisibleWall
 
+def magnitude(v):
+    return math.sqrt(sum(v[i]*v[i] for i in range(len(v))))
+
+def sub(u, v):
+    return [u[i]-v[i] for i in range(len(u))]
+
+def normalize(v):
+    return [v[i]/magnitude(v)  for i in range(len(v))]
+
 #sys.path.append(os.path.abspath("/assets/objects/Player.py"))
 
 pygame.init()
@@ -59,32 +68,45 @@ for i in props:
 
 img = pygame.image.load(os.path.join("assets/sprites/props", "Isaac's_Room_1.png")).convert_alpha()
 image = pygame.transform.scale(img, (1920,1080))
+RUNNING, PAUSE = 0, 1
+state = RUNNING
+pause_text = pygame.font.SysFont('Consolas', 32).render('Pause', True, pygame.color.Color('White'))
 
 while running:
-    
-  screen.fill((0,0,0))
+    for e in pygame.event.get():
+        if e.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE]:
+            running = False
+        if e.type == pygame.KEYDOWN:
+            if e.key == pygame.K_r: state = PAUSE
+            if e.key == pygame.K_e: state = RUNNING
+    else:
+        screen.fill((0,0,0))
+        if state == RUNNING:
 
-  screen.blit(image,(0,0))
+            screen.fill((0,0,0))
 
-  for Wall in props:
-      Wall.Draw()
+            screen.blit(image,(0,0))
 
-  player.update()
-  
-  for i in Entity:
-    if(i.EntityType == "Enemy"):
-      if(i.hp <= 0): 
-        props.pop(props.index(i))
-        Entity.pop(Entity.index(i))
+            for Wall in props:
+                Wall.Draw()
 
-  screen.blit(update_fps(), (10,0))
-  
-  for event in pygame.event.get():
-    if event.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE]:
-      running = False 
-  clock.tick(60)
-  
-  pygame.display.update()
+            player.update()
+            
+            for i in Entity:
+                if(i.EntityType == "Enemy"):
+                    if(i.hp <= 0): 
+                        props.pop(props.index(i))
+                        Entity.pop(Entity.index(i))
 
-pygame.joystick.quit()
-pygame.quit()
+            screen.blit(update_fps(), (10,0))
+            clock.tick(60)
+            
+            pygame.display.update()
+
+        elif state == PAUSE:
+            screen.blit(pause_text, (100, 100))
+
+            pygame.display.flip()
+            clock.tick(60)
+        continue
+    break

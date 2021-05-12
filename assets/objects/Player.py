@@ -6,7 +6,6 @@ from scripts import MovementRelatives as physics
 from assets.objects.PlayerSword import Sword
 from threading import Timer
 
-
 pygame.init()
 pygame.joystick.init()
 
