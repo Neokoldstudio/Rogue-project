@@ -6,23 +6,21 @@ from assets.objects.enemies.Enemies import Enemy
 from assets.objects.environnement.Wall import Wall
 from assets.objects.environnement.InvisibleWall import InvisibleWall
 
-#sys.path.append(os.path.abspath("/assets/objects/Player.py"))
-
 pygame.init()
 
 #screen_width, screen_height = 1000,1000
 
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)#affichage en plein écran
 #screen = pygame.display.set_mode((600, 600))
 
 pygame.display.set_caption("Rogue Like")
 
 running = True
-clock = pygame.time.Clock()
+clock = pygame.time.Clock()#création d'une clock gérant le nombre d'image par seconde
 font = pygame.font.SysFont("Arial", 18)
  
  
-def update_fps():
+def update_fps():#fonction permettant d'afficher le nombre d'images par secondes atteintes par le jeu
 
 	fps = str(int(clock.get_fps()))
 
@@ -37,20 +35,20 @@ IWallRight = InvisibleWall(screen, (1718, 0), (2,1080))
 IWallDown = InvisibleWall(screen, (0, 888), (1920,2))
 wall = Wall(screen, "wall.jpg", (600,150),(150,150))
 
-props = [IWallTop, IWallLeft, IWallRight, IWallDown, wall]
+props = [IWallTop, IWallLeft, IWallRight, IWallDown, wall]#liste contenant tout les objets avec lesquels le joueur peut entrer en collision
 
 player = Player(screen, "test_idle.png", (1000,100),props)
 
-Enemy1 = Enemy(screen, (300,200),player, props,"Fly")
-Enemy2 = Enemy(screen, (500,200),player, props,"Zombie")
-Enemy3 = Enemy(screen, (600,200),player, props,"Fly")
+Enemy1 = Enemy(screen, (300,200),player, props,"Fly")   #-
+Enemy2 = Enemy(screen, (500,200),player, props,"Zombie")# |-- création des ennemis
+Enemy3 = Enemy(screen, (600,200),player, props,"Fly")   #-
 props.append(Enemy1)
 props.append(Enemy2)
 props.append(Enemy3)
 #fin de la création de toutes les instances
 Entity = []
 
-for i in props:
+for i in props: #bout de code qui isole les "entitées" des murs, afin de créer une liste référençant seulement les entitées ( ennemies, etc ... )
   try:
     if(i.EntityType):
       Entity.append(i)
@@ -59,32 +57,46 @@ for i in props:
 
 img = pygame.image.load(os.path.join("assets/sprites/props", "Isaac's_Room_1.png")).convert_alpha()
 image = pygame.transform.scale(img, (1920,1080))
+RUNNING, PAUSE = 0, 1
+state = RUNNING
+pause_text = pygame.font.SysFont('Consolas', 32).render('Pause', True, pygame.color.Color('White'))
 
 while running:
-    
-  screen.fill((0,0,0))
+    for e in pygame.event.get():
+        if e.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE]:#condition permettant de quitter le jeu
+            running = False
+        if e.type == pygame.KEYDOWN:
+            if e.key == pygame.K_r: state = PAUSE#petite "state machine" permettant de faire passer le jeu de l'état jouable à la pause
+            if e.key == pygame.K_e: state = RUNNING
+    else:
+        screen.fill((0,0,0))
+        if state == RUNNING:#le jeu est en état "jouable"
 
-  screen.blit(image,(0,0))
+            #screen.fill((0,0,0))
 
-  for Wall in props:
-      Wall.Draw()
+            screen.blit(image,(0,0))
 
-  player.update()
-  
-  for i in Entity:
-    if(i.EntityType == "Enemy"):
-      if(i.hp <= 0): 
-        props.pop(props.index(i))
-        Entity.pop(Entity.index(i))
+            for Prop in props:
+                Prop.Draw()
 
-  screen.blit(update_fps(), (10,0))
-  
-  for event in pygame.event.get():
-    if event.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE]:
-      running = False 
-  clock.tick(60)
-  
-  pygame.display.update()
+            player.update()
+            
+            for i in Entity: #bout de code gérant la mort des ennemis 
+                if(i.EntityType == "Enemy"):
+                    if(i.hp <= 0): 
+                        props.pop(props.index(i))
+                        Entity.pop(Entity.index(i))
 
-pygame.joystick.quit()
-pygame.quit()
+            screen.blit(update_fps(), (10,0))
+
+            clock.tick(60)#le nombre maximal d'images par seconde est 60 fps
+            
+            pygame.display.update()#ligne permettant de rafraichir l'écran
+
+        elif state == PAUSE:#le jeu est en pause
+            screen.blit(pause_text, (100, 100))
+
+            pygame.display.flip()
+            clock.tick(60)
+        continue
+    break
