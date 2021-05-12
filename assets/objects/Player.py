@@ -51,10 +51,10 @@ class Player():
        
     def update(self):
 
-        HitPos = {(0,1):Sword(self.screen, (self.collisionCenter[0] + 40, self.collisionCenter[1]-40), (80,80)), #dictionnaire faisant correspondre les inputs  
-                       (0,-1):Sword(self.screen, (self.collisionCenter[0] - 100, self.collisionCenter[1] - 30), (80,80)),
-                       (-1,0):Sword(self.screen, (self.collisionCenter[0] - 35, self.collisionCenter[1]-100), (80,80)),
-                       (1,0):Sword(self.screen, (self.collisionCenter[0] - 30, self.collisionCenter[1] + 40), (80,80))}
+        HitPos = {(0,1):Sword(self.screen, (self.collisionCenter[0] + 30, self.collisionCenter[1]-40), (70,70)), #dictionnaire faisant correspondre les inputs  
+                  (0,-1):Sword(self.screen, (self.collisionCenter[0] - 110, self.collisionCenter[1] - 40), (70,70)),
+                  (-1,0):Sword(self.screen, (self.collisionCenter[0] - 35, self.collisionCenter[1]-100), (70,70)),
+                  (1,0):Sword(self.screen, (self.collisionCenter[0] - 35, self.collisionCenter[1] + 30), (70,70))}
 
         def invicEnd(): #les quatres fonctions qui suivent gèrent des cooldown, FlashEnd permet de faire passer le personnage en blanc
             self.hit = False
@@ -200,4 +200,4 @@ class Player():
         self.screen.blit(self.image,self.rect)
 
         #collision debug : 
-        pygame.draw.circle(self.screen, (255,0,0), self.collisionCenter, self.collideRadius)
+        #pygame.draw.circle(self.screen, (255,0,0), self.collisionCenter, self.collideRadius)
