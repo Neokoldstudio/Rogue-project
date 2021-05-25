@@ -55,7 +55,7 @@ class Player():
                   (-1,0):Sword(self.screen, (self.collisionCenter[0] - 35, self.collisionCenter[1]-100), (70,70)),
                   (1,0):Sword(self.screen, (self.collisionCenter[0] - 35, self.collisionCenter[1] + 30), (70,70))}
 
-        def invicEnd(): #les quatres fonctions qui suivent gèrent des cooldown, FlashEnd permet de faire passer le personnage en blanc
+        def invicEnd(): #les quatres fonctions qui suivent gèrent des cooldown (timer), FlashEnd permet de faire passer le personnage en blanc
             self.hit = False
         def FlashEnd():
             x,y = self.rect.x, self.rect.y
@@ -117,7 +117,7 @@ class Player():
             HitDown = key[pygame.K_DOWN]
 
             #calcul de la direction horizontale et verticale
-            HorDir = KeyRight - KeyLeft
+            HorDir = KeyRight - KeyLeft#par exemple : 
             VerDir = KeyDown - KeyUp
             #correction de la vitesse plus élevée en diagonale
             if(HorDir*VerDir != 0):
@@ -178,7 +178,7 @@ class Player():
 
                         if(self.hp <= 0):
                             self.hp = 0
-                            #logique de la mort du perso
+                            #logique de la mort du perso à mettre ici
 
                         x,y = self.rect.x, self.rect.y
 
