@@ -10,7 +10,7 @@ pygame.init()
 pygame.joystick.init()
 
 class Player():
-    def __init__(self,screen, sprite, position, props):
+    def __init__(self,screen, sprite, position, props):#props est la liste de tout les objets de la scène, permettant de vérifié qi le joueur rentre en collision avec
 
         self.joysticks=[pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
 
@@ -50,7 +50,7 @@ class Player():
        
     def update(self):
 
-        HitPos = {(0,1):Sword(self.screen, (self.collisionCenter[0] + 30, self.collisionCenter[1]-40), (70,70)), #dictionnaire faisant correspondre les inputs  
+        HitPos = {(0,1):Sword(self.screen, (self.collisionCenter[0] + 30, self.collisionCenter[1]-40), (70,70)), #dictionnaire faisant correspondre les inputs avec la direction de l'attaque et la zone de collision de cette dernière  
                   (0,-1):Sword(self.screen, (self.collisionCenter[0] - 110, self.collisionCenter[1] - 40), (70,70)),
                   (-1,0):Sword(self.screen, (self.collisionCenter[0] - 35, self.collisionCenter[1]-100), (70,70)),
                   (1,0):Sword(self.screen, (self.collisionCenter[0] - 35, self.collisionCenter[1] + 30), (70,70))}
@@ -133,7 +133,7 @@ class Player():
                 if((HorHit,VerHit) in HitPos):
                     HitList = (VerHit,HorHit)
 
-                self.SwordList.append(HitPos[HitList])
+                    self.SwordList.append(HitPos[HitList])
 
                 self.SwordList[0].Draw()
 
@@ -169,7 +169,7 @@ class Player():
                         self.rect.y = old_y
                     self.collisionCenter = (self.rect.x + self.colliderXOffset, self.rect.y + self.colliderYOffset)
 
-            elif(i.collisionType == "Circle" and i != self):#l'objet avec le lequel on vérifie la collision à une hitbox ronde
+            elif(i.collisionType == "Circle" and i != self):#l'objet avec le lequel on vérifie la collision à une hitbox ronde et n'est pas le joueur
                 if(physics.DistCircleToCircle(self.collisionCenter, i.collisionCenter, self.collideRadius, i.collideRadius) <= 0):
 
                     if(i.EntityType == "Enemy" and not self.hit):
@@ -195,6 +195,10 @@ class Player():
                         flash.start()
 
                         print(self.hp)
+
+                    if(i.EntityType == "heart" and self.hp < 6 ):
+                        self.hp += 1
+                        i.used = True
 
         self.screen.blit(self.image,self.rect)
 

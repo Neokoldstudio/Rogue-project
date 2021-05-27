@@ -8,6 +8,7 @@ from assets.objects.enemies.Enemies import Enemy     #import des objets créés 
 from assets.objects.environnement.Wall import Wall
 from assets.objects.environnement.InvisibleWall import InvisibleWall
 from assets.objects.healthBar import Health
+from assets.objects.environnement.heart import Heart
 #####################################################################
 
 pygame.init()
@@ -37,7 +38,7 @@ props = []
 
 IWallTop = InvisibleWall(screen, (0, 180), (1920,2))   #-
 IWallLeft = InvisibleWall(screen, (200, 0), (2,1080))  # |
-IWallRight = InvisibleWall(screen, (1718, 0), (2,1080))# |-- crtéation des murs
+IWallRight = InvisibleWall(screen, (1718, 0), (2,1080))# |-- création des murs
 IWallDown = InvisibleWall(screen, (0, 888), (1920,2))  # |
 wall = Wall(screen, "wall.jpg", (600,150),(150,150))   #-
 
@@ -49,10 +50,11 @@ player = Player(screen, "test_idle.png", (1000,100),props)
 Enemy1 = Enemy(screen, (300,200),player, props,"Fly")   #-
 Enemy2 = Enemy(screen, (500,200),player, props,"Zombie")# |-- création des ennemis
 Enemy3 = Enemy(screen, (600,200),player, props,"Fly")   #-
+heart = Heart(screen, (500,500), player)
+props.append(heart)
 props.append(Enemy1)
 props.append(Enemy2)
 props.append(Enemy3)
-
 
 
 healthBar = Health(screen, (200,100), player)#création de l'objet healthbar
@@ -96,6 +98,10 @@ while running:#boucle principale, exécutée ~60 fois par secondes ( la clock pe
             for i in Entity: #bout de code gérant la mort des ennemis 
                 if(i.EntityType == "Enemy"):
                     if(i.hp <= 0): 
+                        props.pop(props.index(i))
+                        Entity.pop(Entity.index(i))
+                if(i.EntityType == "heart"):
+                    if(i.used):
                         props.pop(props.index(i))
                         Entity.pop(Entity.index(i))
 

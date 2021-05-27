@@ -13,11 +13,11 @@ class Health():
                         ("assets/sprites/health","heart3.png"),
                         ("assets/sprites/health","heart2.png"),
                         ("assets/sprites/health","heart1.png"),
-                        ("assets/sprites/health","heart0.png")]
+                        ("assets/sprites/health","heart0.png")] # liste de toute les images possibles de la barre de vie
                         
 
     def Update(self):
-        self.img = pygame.image.load(os.path.join(self.sprites[self.player.hp][0], self.sprites[self.player.hp][1])).convert_alpha()
+        self.img = pygame.image.load(os.path.join(self.sprites[self.player.hp][0], self.sprites[self.player.hp][1])).convert_alpha() #change le sprite de la barre de vie en fonction 
         self.image = pygame.transform.scale(self.img, (128,128))
         self.rect = self.image.get_rect()
         self.rect.x = self.position[0]
