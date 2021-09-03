@@ -33,7 +33,8 @@ def update_fps():#fonction permettant d'afficher le nombre d'images par secondes
 	return fps_text#retourne un texte ( objet de pygame )
 
 
-#création de toutes les instances des objets 
+#création de toutes les instances des objets, les objets sont ici rajoutés manuellement
+#TODO : implémenter un système permettant de spawn des ennemis dynamiquement 
 props = []
 
 IWallTop = InvisibleWall(screen, (0, 180), (1920,2))   #-
@@ -59,7 +60,6 @@ props.append(Enemy3)
 
 healthBar = Health(screen, (200,100), player)#création de l'objet healthbar
 
-#fin de la création de toutes les instances
 Entity = []
 
 for i in props: #isole les "entitées" des murs, afin de créer une liste référençant seulement les entitées ( ennemies, etc ... )
